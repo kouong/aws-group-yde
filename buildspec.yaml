@@ -3,11 +3,12 @@ phases:
   install:
     commands:
       - echo Installing dependencies...
-      - pip install -r requirements.txt || true
+      - pip install -r frontend/requirements.txt || true
   build:
     commands:
       - echo Zipping application files...
-      - zip -r app.zip app.py appspec.yml scripts/ requirements.txt
+      - cd frontend
+      - zip -r ../app.zip app.py appspec.yml scripts/ requirements.txt
 artifacts:
   files:
     - app.zip
