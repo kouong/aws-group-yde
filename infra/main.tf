@@ -2,12 +2,8 @@ provider "aws" {
   region = "us-east-1"
 }
 
-resource "aws_s3_bucket" "artifact_bucket" {
-  bucket = "demo-artifacts-bucket-gerard"
-}
-
 resource "aws_iam_role" "codedeploy_role" {
-  name = "CodeDeployServiceRole"
+  name = var.codedeploy_role_name
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [{
@@ -25,12 +21,68 @@ resource "aws_iam_role_policy_attachment" "codedeploy_policy" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSCodeDeployRole"
 }
 
+# IAM role for EC2 instance
+resource "aws_iam_role" "ec2_role" {
+  name = var.ec2_iam_role_name
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Action = "sts:AssumeRole"
+      Principal = {
+        Service = "ec2.amazonaws.com"
+      }
+      Effect = "Allow"
+    }]
+  })
+}
+
+# Attach policies to EC2 role
+resource "aws_iam_role_policy_attachment" "ec2_s3_policy" {
+  role       = aws_iam_role.ec2_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess"
+}
+
+resource "aws_iam_role_policy_attachment" "ec2_codedeploy_policy" {
+  role       = aws_iam_role.ec2_role.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonEC2RoleforAWSCodeDeploy"
+}
+
+# Instance profile for EC2
+resource "aws_iam_instance_profile" "ec2_profile" {
+  name = "EC2CodeDeployProfile"
+  role = aws_iam_role.ec2_role.name
+}
+
+# Security group for EC2
+resource "aws_security_group" "demo_sg" {
+  name        = var.aws_security_group_name
+  description = "Allow HTTP traffic"
+
+  ingress {
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+
 resource "aws_instance" "demo_ec2" {
-  ami           = "ami-0bdd88bd06d16ba03" # Amazon Linux 2 (us-east-1)
-  instance_type = "t2.micro"
+  ami                    = "ami-0bdd88bd06d16ba03"
+  instance_type          = "t2.micro"
+  iam_instance_profile   = aws_iam_instance_profile.ec2_profile.name
+  vpc_security_group_ids = [aws_security_group.demo_sg.id]
+
+  key_name = "ec2-key-pair"
 
   tags = {
-    Name = "DemoEC2"
+    Name = var.ec2_instance_name
   }
 
   user_data = <<-EOF
@@ -46,7 +98,7 @@ resource "aws_instance" "demo_ec2" {
 }
 
 resource "aws_codedeploy_app" "demo_app" {
-  name             = "DemoWebApp"
+  name             = var.codedeploy_app_name
   compute_platform = "Server"
 }
 
@@ -59,7 +111,7 @@ resource "aws_codedeploy_deployment_group" "demo_group" {
     ec2_tag_filter {
       key   = "Name"
       type  = "KEY_AND_VALUE"
-      value = "DemoEC2"
+      value = var.ec2_instance_name
     }
   }
 }

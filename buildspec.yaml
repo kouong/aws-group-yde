@@ -1,13 +1,25 @@
 version: 0.2
+
 phases:
   install:
     commands:
+      # Print status message for installation phase
       - echo Installing dependencies...
-      - pip install -r requirements.txt || true
+      # Install Python dependencies from requirements file (continue if it fails)
+      - pip install -r frontend/requirements.txt || true
   build:
     commands:
-      - echo Zipping application files...
-      - zip -r app.zip app.py appspec.yml scripts/ requirements.txt
+      # Print status message for build phase
+      - echo Preparing files for deployment...
+      # Copy all frontend files to the root directory
+      - cp -r frontend/* .
+      # List all files to verify the copy operation
+      - ls -la
+
+# Define which files and directories to include in the build artifact
 artifacts:
   files:
-    - app.zip
+    - appspec.yml # CodeDeploy application specification file
+    - app.py # Main Python application file
+    - requirements.txt # Python dependencies list
+    - scripts/**/* # All files in scripts directory and subdirectories

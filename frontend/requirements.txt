@@ -1,1 +1,2 @@
+# Flask web framework for building the web application
 flask
