@@ -8,7 +8,7 @@ phases:
     commands:
       - echo Zipping application files...
       - cd frontend
-      - zip -r ../app.zip app.py appspec.yaml scripts/ requirements.txt
+      - zip -r ../app.zip .
       - cd ..
 artifacts:
   files:
