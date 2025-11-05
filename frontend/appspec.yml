@@ -7,9 +7,11 @@ phases:
   build:
     commands:
       - echo Preparing files for deployment...
-      - ls -la frontend/
+      - cp -r frontend/* .
+      - ls -la
 artifacts:
   files:
-    - '**/*'
-  base-directory: 'frontend'
-  discard-paths: no
+    - appspec.yml
+    - app.py
+    - requirements.txt
+    - scripts/**/*
