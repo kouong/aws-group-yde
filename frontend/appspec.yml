@@ -6,12 +6,9 @@ phases:
       - pip install -r frontend/requirements.txt || true
   build:
     commands:
-      - echo Preparing files for deployment...
-      - cp -r frontend/* .
-      - ls -la
+      - echo Packaging application correctly...
+      - cd frontend
+      - zip -r ../app.zip *
 artifacts:
   files:
-    - appspec.yml
-    - app.py
-    - requirements.txt
-    - scripts/**/*
+    - app.zip
