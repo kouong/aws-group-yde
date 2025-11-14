@@ -253,7 +253,7 @@ Make a small change to test automatic deployment:
 
 ```bash
 cd ..
-echo "# Test Change" >> frontend/app.py
+notepad frontend/app.py =>  search for lightblue and change it to another color. (eg. green)
 git add .
 git commit -m "Test pipeline"
 git push origin main
@@ -295,10 +295,20 @@ Every time you push code to GitHub, the pipeline automatically:
 Try it:
 ```bash
 # Edit frontend/app.py - change some text
-git add .
+notepad frontend/app.py =>  search for lightblue and change it to another color. (eg. green)
+git add frontend/app.py infra/main.tf
 git commit -m "Update app"
 git push origin main
 ```
+
+***Important notes***
+1. If you see *** Please Tell me who you are. , just run the suggest commands as there are
+```
+git config --golbal user.email "you@example.com"
+git config --global user.name "Your Name"
+```
+
+2. If there is a popup windows "CredentialHelperSelector", choose  "manager" and choose to login via Browser and then click "Select". You might then be asked to enter github username and password.
 
 Wait 5-7 minutes, then refresh your browser to see the changes!
 
@@ -314,6 +324,8 @@ terraform destroy
 ```
 
 Type `yes` when prompted. This removes everything from AWS.
+
+Since the S3 bucket is not empty you will get an error message becaue the bucket must first be emptied before deletion. You can just go the aws console, empty the bucket and then delete the bucket.
 
 ---
 
