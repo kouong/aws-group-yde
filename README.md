@@ -294,7 +294,7 @@ Every time you push code to GitHub, the pipeline automatically:
 Try it:
 ```bash
 # Edit frontend/app.py - change some text
-notepad frontend/app.py =>  search for lightblue and change it to another color. (eg. green)
+notepad frontend/app.py =>  search for the word "lightblue" and change it to another color. (eg. green)
 git add frontend/app.py
 git commit -m "Update app"
 git push origin main
