@@ -34,7 +34,7 @@ def home():
     <head>
         <style>
             body {
-                background-color: lightblue;
+                background-color: green;
                 font-family: Arial, sans-serif;
                 padding: 20px;
             }
@@ -42,7 +42,7 @@ def home():
     </head>
     <body>
         <h1>Welcome to the 12-Week AWS Workshop Challenge!</h1>
-        <p>Version 1</p>
+        <p>Version 2</p>
     </body>
     </html>
     """
